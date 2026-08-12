@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f4ee">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SUMMER SONIC">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <title>SUMMER SONIC 2026 TOKYO｜8月15日タイムテーブル</title>
+</head>
+<body data-start-utc="2026-08-15T00:00:00Z" data-end-utc="2026-08-15T14:00:00Z">
+  <main>
+    <section class="viewer" id="viewer" aria-label="8月15日（土）東京会場タイムテーブル">
+      <div class="sheet" id="sheet">
+        <img class="base-image" src="assets/timetable_tokyo0815.jpg" alt="SUMMER SONIC 2026 TOKYO 8月15日（土）タイムテーブル">
+        <img class="header-copy" src="assets/timetable_tokyo0815.jpg" alt="" aria-hidden="true">
+        <div class="time-layer" aria-hidden="true"></div>
+        <div class="pick-layer"></div>
+        <div class="now-line" aria-hidden="true"><span>現在時刻</span></div>
+        <div class="pick-time-layer" aria-hidden="true"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="zoomctl" aria-label="表示倍率">
+    <button class="zbtn" id="zoomIn" type="button" aria-label="拡大">＋</button>
+    <div class="zlabel" id="zoomLabel">100%</div>
+    <button class="zbtn" id="zoomOut" type="button" aria-label="縮小">−</button>
+  </div>
+
+  <nav class="mbar" aria-label="タイムテーブル操作">
+    <div class="date-chip" aria-label="2026年8月15日 土曜日 東京">
+      <strong>15</strong><span>SAT<br>TOKYO</span>
+    </div>
+    <button class="mbtn" id="jumpNow" type="button">
+      <span class="mi">●</span><span class="ml">現在</span>
+    </button>
+    <button class="mbtn focus-toggle" id="focusToggle" type="button" aria-pressed="false">
+      <span class="mi">◐</span><span class="ml">薄く</span>
+    </button>
+    <button class="mbtn" id="infoOpen" type="button" aria-expanded="false">
+      <span class="mi">ⓘ</span><span class="ml">インフォ</span>
+    </button>
+  </nav>
+
+  <div class="info-backdrop" id="infoBackdrop"></div>
+  <section class="info-sheet" id="infoSheet" aria-hidden="true" aria-labelledby="infoTitle">
+    <div class="info-grip"></div>
+    <h1 class="info-title" id="infoTitle">SUMMER SONIC 2026<small>8.15 SAT / TOKYO</small></h1>
+    <div class="info-clock"><strong id="clockText">現在時刻</strong><span id="statusText">読み込み中です。</span></div>
+    <p class="info-help">出演者をタップするたびに「ハイライト → ゴールド → レインボー → 解除」と変わります。選択はこの端末に保存されます。「薄く」を使うと、選んでいない出演者を見分けやすくできます。</p>
+    <p class="info-help">右側の＋／−で拡大・縮小できます。横にスクロールして左の時刻が見えなくなると、追従する時間軸が表示されます。スマートフォンを横向きにしてもそのまま使えます。</p>
+    <p class="info-line">電波の良い場所で一度開いておけば、圏外でも表示できます。「ホーム画面に追加」して使うのがおすすめです。</p>
+    <p class="info-disclaimer"><strong>非公式タイムテーブルです。</strong><br>出演時刻や内容は変更される場合があります。当日は公式発表も確認してください。</p>
+    <button class="info-close" id="infoClose" type="button">閉じる</button>
+  </section>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function(){ navigator.serviceWorker.register('./sw.js'); });
+    }
+  </script>
+</body>
+</html>
