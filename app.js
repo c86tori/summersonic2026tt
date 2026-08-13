@@ -15,6 +15,12 @@
   var STORAGE_PREFIX = 'summersonic2026-picks-v1:tokyo-0815:';
   var ZOOM_KEY = 'summersonic2026-zoom-v1';
   var DIM_KEY = 'summersonic2026-dim-v1';
+  var DEVICE_KEY = 'summersonic2026-ranking-device-v1';
+  var PENDING_KEY = 'summersonic2026-ranking-pending-v1';
+  var rankingConfig=window.SUMMERSONIC_RANKING_CONFIG||{};
+  var rankingSupabaseUrl=String(rankingConfig.supabaseUrl||'').replace(/\/+$/,'');
+  var rankingPublishableKey=String(rankingConfig.publishableKey||'');
+  var rankingEnabled=rankingConfig.provider==='supabase'&&Boolean(rankingSupabaseUrl&&rankingPublishableKey);
 
   var stages = [
     {name:'MARINE STAGE',color:'rgba(18,146,224,.9)',hover:'rgba(8,125,204,.95)'},
@@ -90,8 +96,76 @@
       if(level)localStorage.setItem(STORAGE_PREFIX+itemId(item),String(level));
       else localStorage.removeItem(STORAGE_PREFIX+itemId(item));
       setLevel(cell,label,level);
+      queueRankingSync();
     });
   });
+
+  var rankingSyncTimer=0;
+  var rankingSyncing=false;
+  var rankingSyncAgain=false;
+
+  function rankingDeviceId(){
+    var existing=localStorage.getItem(DEVICE_KEY);
+    if(existing)return existing;
+    var id;
+    if(window.crypto&&typeof window.crypto.randomUUID==='function')id=window.crypto.randomUUID();
+    else{
+      var bytes=new Uint8Array(16);
+      if(window.crypto&&typeof window.crypto.getRandomValues==='function')window.crypto.getRandomValues(bytes);
+      else for(var i=0;i<bytes.length;i++)bytes[i]=Math.floor(Math.random()*256);
+      id=Array.from(bytes,function(value){return value.toString(16).padStart(2,'0');}).join('');
+    }
+    localStorage.setItem(DEVICE_KEY,id);
+    return id;
+  }
+
+  function rankingSelections(){
+    return schedule.map(function(item){
+      var level=getLevel(item);
+      return level?{artistId:itemId(item),level:level}:null;
+    }).filter(Boolean);
+  }
+
+  function queueRankingSync(){
+    if(!rankingEnabled)return;
+    localStorage.setItem(PENDING_KEY,'1');
+    if(rankingSyncTimer)window.clearTimeout(rankingSyncTimer);
+    rankingSyncTimer=window.setTimeout(syncRankingSelections,1200);
+  }
+
+  async function syncRankingSelections(){
+    rankingSyncTimer=0;
+    if(!rankingEnabled||!navigator.onLine)return;
+    if(rankingSyncing){rankingSyncAgain=true;return;}
+    rankingSyncing=true;
+    var controller=new AbortController();
+    var timeout=window.setTimeout(function(){controller.abort();},8000);
+    try{
+      var response=await fetch(rankingSupabaseUrl+'/rest/v1/rpc/sync_ranking_selections',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':rankingPublishableKey},
+        body:JSON.stringify({p_device_id:rankingDeviceId(),p_selections:rankingSelections()}),
+        signal:controller.signal
+      });
+      if(!response.ok)throw new Error('ranking sync failed');
+      localStorage.removeItem(PENDING_KEY);
+    }catch(_error){
+      localStorage.setItem(PENDING_KEY,'1');
+    }finally{
+      window.clearTimeout(timeout);
+      rankingSyncing=false;
+      if(rankingSyncAgain){rankingSyncAgain=false;queueRankingSync();}
+    }
+  }
+
+  if(rankingEnabled){
+    window.addEventListener('online',function(){if(localStorage.getItem(PENDING_KEY)==='1')queueRankingSync();});
+    document.addEventListener('visibilitychange',function(){
+      if(!document.hidden&&localStorage.getItem(PENDING_KEY)==='1')queueRankingSync();
+    });
+    localStorage.setItem(PENDING_KEY,'1');
+    window.setTimeout(syncRankingSelections,1800);
+  }
 
   function initArtistIntros(){
     var intros=window.SUMMERSONIC_ARTIST_INTROS||{};

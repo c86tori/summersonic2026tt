@@ -1,10 +1,14 @@
 'use strict';
 
-const CACHE = 'summersonic2026-v11';
+const CACHE = 'summersonic2026-v14';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
+  './ranking.html',
+  './ranking.css',
+  './ranking-config.js',
+  './ranking.js',
   './artist-intros.js',
   './app.js',
   './manifest.webmanifest',

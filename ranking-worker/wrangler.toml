@@ -1,0 +1,8 @@
+name = "summersonic2026-ranking"
+main = "src/index.js"
+compatibility_date = "2026-08-13"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "summersonic2026-ranking"
+database_id = "709856c0-e864-492c-9947-11bec140d347"

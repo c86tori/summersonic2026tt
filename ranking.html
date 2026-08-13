@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#159ee0">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="stylesheet" href="ranking.css">
+  <title>見たいアーティストランキング｜SUMMER SONIC 2026</title>
+</head>
+<body>
+  <header class="rank-hero">
+    <div class="rank-hero-inner">
+      <a class="rank-back" href="./" aria-label="タイムテーブルへ戻る">‹</a>
+      <div>
+        <p class="rank-kicker">SUMMER SONIC 2026 · TOKYO · 8.15 SAT</p>
+        <h1>見たいアーティスト<br>ランキング</h1>
+      </div>
+    </div>
+  </header>
+
+  <main class="rank-main">
+    <section class="rank-summary" aria-labelledby="rankSummaryTitle">
+      <div>
+        <h2 id="rankSummaryTitle">みんなの選択を匿名集計</h2>
+        <p id="rankUpdated">ランキングを読み込んでいます。</p>
+      </div>
+      <button class="rank-refresh" id="rankRefresh" type="button">更新</button>
+    </section>
+
+    <p class="rank-status" id="rankStatus" role="status"></p>
+    <ol class="rank-list" id="rankList" aria-label="見たいアーティストランキング"></ol>
+    <button class="rank-more" id="rankMore" type="button" hidden>11位以下を見る</button>
+
+    <section class="rank-notes">
+      <h2>集計方法</h2>
+      <p><strong>通常 1.0点</strong>・<strong>ゴールド 1.1点</strong>・<strong>レインボー 1.2点</strong>。1台につき、各アーティストの最新の選択状態だけを集計しています。</p>
+      <p>このランキングは非公式です。タイムテーブル上の選択状況から作成しています。</p>
+    </section>
+  </main>
+
+  <script src="ranking-config.js"></script>
+  <script src="ranking.js"></script>
+</body>
+</html>
