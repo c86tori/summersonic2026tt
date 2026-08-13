@@ -75,6 +75,9 @@
     cell.style.setProperty('--pick-color-hover',stage.hover);
     cell.title=artist+' / '+stage.name+' / '+start+'-'+end;
     cell.setAttribute('aria-label',cell.title);
+    cell.dataset.artistName=artist;
+    cell.dataset.stageName=stage.name;
+    cell.dataset.showTime=start+'–'+end;
     cell.innerHTML='<span>'+escapeHtml(artist)+'</span>';
     var label=document.createElement('time');
     label.className='pick-time-label';
@@ -89,6 +92,106 @@
       setLevel(cell,label,level);
     });
   });
+
+  function initArtistIntros(){
+    var intros=window.SUMMERSONIC_ARTIST_INTROS||{};
+    var targets=artistCells.map(function(cell){
+      var artist=cell.dataset.artistName;
+      return intros[artist]?{
+        cell:cell,
+        artist:artist,
+        body:intros[artist],
+        meta:'15 SAT · '+cell.dataset.stageName+' · '+cell.dataset.showTime
+      }:null;
+    }).filter(Boolean);
+    if(!targets.length)return;
+
+    var layer=document.createElement('div');
+    layer.className='artist-intro-layer';
+    layer.setAttribute('aria-hidden','true');
+    layer.innerHTML='<div class="artist-intro-backdrop"></div>'+
+      '<section class="artist-intro-sheet" role="dialog" aria-modal="true" aria-labelledby="artistIntroTitle">'+
+        '<div class="artist-intro-grip" aria-hidden="true"></div>'+
+        '<button class="artist-intro-close" type="button" aria-label="閉じる">×</button>'+
+        '<p class="artist-intro-meta"></p>'+
+        '<h2 class="artist-intro-title" id="artistIntroTitle"></h2>'+
+        '<p class="artist-intro-copy"></p>'+
+      '</section>';
+    document.body.appendChild(layer);
+
+    var backdrop=layer.querySelector('.artist-intro-backdrop');
+    var closeButton=layer.querySelector('.artist-intro-close');
+    var meta=layer.querySelector('.artist-intro-meta');
+    var title=layer.querySelector('.artist-intro-title');
+    var copy=layer.querySelector('.artist-intro-copy');
+    var lastFocus=null;
+
+    function isSmartphone(){
+      return Math.min(window.innerWidth,window.innerHeight)<=500 && window.matchMedia('(pointer:coarse)').matches;
+    }
+    function openIntro(target){
+      lastFocus=document.activeElement;
+      meta.textContent=target.meta;
+      title.textContent=target.artist;
+      copy.textContent=target.body;
+      layer.classList.add('is-open');
+      layer.setAttribute('aria-hidden','false');
+      window.setTimeout(function(){closeButton.focus({preventScroll:true});},220);
+    }
+    function closeIntro(){
+      if(!layer.classList.contains('is-open'))return;
+      layer.classList.remove('is-open');
+      layer.setAttribute('aria-hidden','true');
+      if(lastFocus&&typeof lastFocus.focus==='function')lastFocus.focus({preventScroll:true});
+    }
+
+    closeButton.addEventListener('click',closeIntro);
+    backdrop.addEventListener('click',closeIntro);
+    document.addEventListener('keydown',function(event){if(event.key==='Escape')closeIntro();});
+
+    targets.forEach(function(target){
+      var cell=target.cell;
+      var timer=0;
+      var press=null;
+      var suppressClickUntil=0;
+      cell.classList.add('has-artist-intro');
+
+      function cancelPress(){
+        if(timer)window.clearTimeout(timer);
+        timer=0;
+        press=null;
+      }
+      cell.addEventListener('pointerdown',function(event){
+        if(!isSmartphone()||event.pointerType==='mouse'||event.isPrimary===false)return;
+        cancelPress();
+        press={id:event.pointerId,x:event.clientX,y:event.clientY};
+        timer=window.setTimeout(function(){
+          timer=0;
+          press=null;
+          suppressClickUntil=Date.now()+900;
+          openIntro(target);
+        },1500);
+      });
+      cell.addEventListener('pointermove',function(event){
+        if(!press||event.pointerId!==press.id)return;
+        if(Math.hypot(event.clientX-press.x,event.clientY-press.y)>12)cancelPress();
+      },{passive:true});
+      cell.addEventListener('pointerup',cancelPress);
+      cell.addEventListener('pointercancel',cancelPress);
+      cell.addEventListener('pointerleave',cancelPress);
+      cell.addEventListener('lostpointercapture',cancelPress);
+      cell.addEventListener('contextmenu',function(event){if(isSmartphone())event.preventDefault();});
+      cell.addEventListener('click',function(event){
+        if(Date.now()>=suppressClickUntil)return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        suppressClickUntil=0;
+      },true);
+      viewer.addEventListener('scroll',cancelPress,{passive:true});
+    });
+  }
+
+  initArtistIntros();
 
   for(var hour=9;hour<=23;hour++){
     var label=document.createElement('div');

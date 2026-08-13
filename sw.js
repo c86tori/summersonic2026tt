@@ -1,10 +1,11 @@
 'use strict';
 
-const CACHE = 'summersonic2026-v9';
+const CACHE = 'summersonic2026-v10';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
+  './artist-intros.js',
   './app.js',
   './manifest.webmanifest',
   './assets/timetable_tokyo0815.jpg',
