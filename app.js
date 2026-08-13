@@ -11,7 +11,7 @@
   var STAGE_LEFT_PX = [94,310,525,740,955,1170];
   var CELL_WIDTH_PX = 198;
   var BASE_WIDTH = 1000;
-  var ZOOM_LEVELS = [.35,.5,.65,.8,.9,1,1.1,1.2,1.3];
+  var ZOOM_LEVELS = [.35,.4,.45,.5,.65,.8,.9,1,1.1,1.2,1.3];
   var STORAGE_PREFIX = 'summersonic2026-picks-v1:tokyo-0815:';
   var ZOOM_KEY = 'summersonic2026-zoom-v1';
   var DIM_KEY = 'summersonic2026-dim-v1';
@@ -229,7 +229,7 @@
   if(document.hidden)updateClock();else startClock();
 
   var zoomIndex=Math.max(0,ZOOM_LEVELS.indexOf(Number(localStorage.getItem(ZOOM_KEY)||1)));
-  if(ZOOM_LEVELS.indexOf(Number(localStorage.getItem(ZOOM_KEY)||1))<0)zoomIndex=5;
+  if(ZOOM_LEVELS.indexOf(Number(localStorage.getItem(ZOOM_KEY)||1))<0)zoomIndex=ZOOM_LEVELS.indexOf(1);
   var fitPending=false;
   function fitsArtistLabel(cell,size){
     var span=cell.firstElementChild;

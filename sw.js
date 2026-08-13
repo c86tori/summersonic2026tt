@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE = 'summersonic2026-v10';
+const CACHE = 'summersonic2026-v11';
 const ASSETS = [
   './',
   './index.html',
